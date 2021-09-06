@@ -59,11 +59,6 @@ module.exports = {
             priority: 10,
             chunks: "initial" // only package third parties that are initially dependent
           },
-          // elementUI: {
-          //   name: "chunk-element-ui", // split elementUI into a single package
-          //   priority: 20, // the weight needs to be larger than libs and app or it will be packaged into libs or app
-          //   test: /[\\/]node_modules[\\/]_?element-ui(.*)/ // in order to adapt to cnpm
-          // },
           commons: {
             name: "chunk-components",
             test: resolve("package"), // can customize your rules

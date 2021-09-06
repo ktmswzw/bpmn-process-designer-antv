@@ -4,7 +4,7 @@ import App from "./App.vue";
 import axios from "axios";
 Vue.prototype.$axios = axios;
 
-// 加载基础ElementUI
+// 加载基础ant-design-vue
 
 import Antd from 'ant-design-vue'
 

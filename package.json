@@ -1,11 +1,12 @@
 {
-  "name": "bpmn-process-designer",
+  "name": "bpmn-process-designer-antv",
   "version": "0.0.1",
-  "description": "A process designer base on Vue 2.x and ElementUI",
+  "description": "A process designer base on Vue 2.x and ant-design-vue",
   "keywords": [
     "bpmn",
     "bpmn.js",
-    "vue"
+    "vue",
+    "ant-design-vue"
   ],
   "author": {
     "name": "ktmswzw",
