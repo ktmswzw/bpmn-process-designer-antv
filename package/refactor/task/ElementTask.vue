@@ -1,13 +1,13 @@
 <template>
   <div class="panel-tab__content">
-    <a-form size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
-      <a-form-item label="异步延续">
+    <a-form-model size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
+      <a-form-model-item label="异步延续">
         <a-checkbox v-model="taskConfigForm.asyncBefore" @change="changeTaskAsync" >异步前</a-checkbox>
         <a-checkbox v-model="taskConfigForm.asyncAfter"  @change="changeTaskAsync" >异步后</a-checkbox>
         <a-checkbox v-model="taskConfigForm.exclusive" v-if="taskConfigForm.asyncAfter || taskConfigForm.asyncBefore"  @change="changeTaskAsync" >排除</a-checkbox>
-      </a-form-item>
+      </a-form-model-item>
       <component :is="witchTaskComponent" v-bind="$props" />
-    </a-form>
+    </a-form-model>
   </div>
 </template>
 

@@ -1,40 +1,40 @@
 <template>
   <div class="panel-tab__content">
-    <a-form :model="flowConditionForm" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" size="small" @submit.native.prevent>
-      <a-form-item label="流转类型">
+    <a-form-model :model="flowConditionForm" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" size="small" @submit.native.prevent>
+      <a-form-model-item label="流转类型">
         <a-select v-model="flowConditionForm.type" @change="updateFlowType">
-          <a-select-option label="普通流转路径" value="normal" />
-          <a-select-option label="默认流转路径" value="default" />
-          <a-select-option label="条件流转路径" value="condition" />
+          <a-select-option value="normal" >普通流转路径</a-select-option>
+            <a-select-option value="default" >默认流转路径</a-select-option>
+            <a-select-option value="condition" >条件流转路径</a-select-option>
         </a-select>
-      </a-form-item>
-      <a-form-item label="条件格式" v-if="flowConditionForm.type === 'condition'" key="condition">
+      </a-form-model-item>
+      <a-form-model-item label="条件格式" v-if="flowConditionForm.type === 'condition'" key="condition">
         <a-select v-model="flowConditionForm.conditionType">
-          <a-select-option label="表达式" value="expression" />
-          <a-select-option label="脚本" value="script" />
+          <a-select-option title="表达式" value="expression" >表达式</a-select-option>
+          <a-select-option title="脚本" value="script" >脚本</a-select-option>
         </a-select>
-      </a-form-item>
-      <a-form-item label="表达式" v-if="flowConditionForm.conditionType && flowConditionForm.conditionType === 'expression'" key="express">
+      </a-form-model-item>
+      <a-form-model-item label="表达式" v-if="flowConditionForm.conditionType && flowConditionForm.conditionType === 'expression'" key="express">
         <a-input v-model="flowConditionForm.body" allowClear @change="updateFlowCondition" />
-      </a-form-item>
+      </a-form-model-item>
       <template v-if="flowConditionForm.conditionType && flowConditionForm.conditionType === 'script'">
-        <a-form-item label="脚本语言" key="language">
+        <a-form-model-item label="脚本语言" key="language">
           <a-input v-model="flowConditionForm.language" allowClear @change="updateFlowCondition" />
-        </a-form-item>
-        <a-form-item label="脚本类型" key="scriptType">
+        </a-form-model-item>
+        <a-form-model-item label="脚本类型" key="scriptType">
           <a-select v-model="flowConditionForm.scriptType">
-            <a-select-option label="内联脚本" value="inlineScript" />
-            <a-select-option label="外部脚本" value="externalScript" />
+            <a-select-option title="内联脚本" value="inlineScript" >内联脚本</a-select-option>
+            <a-select-option title="外部脚本" value="externalScript" >外部脚本</a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item label="脚本" v-if="flowConditionForm.scriptType === 'inlineScript'" key="body">
+        </a-form-model-item>
+        <a-form-model-item label="脚本" v-if="flowConditionForm.scriptType === 'inlineScript'" key="body">
           <a-input v-model="flowConditionForm.body" type="textarea" allowClear @change="updateFlowCondition" />
-        </a-form-item>
-        <a-form-item label="资源地址" v-if="flowConditionForm.scriptType === 'externalScript'" key="resource">
+        </a-form-model-item>
+        <a-form-model-item label="资源地址" v-if="flowConditionForm.scriptType === 'externalScript'" key="resource">
           <a-input v-model="flowConditionForm.resource" allowClear @change="updateFlowCondition" />
-        </a-form-item>
+        </a-form-model-item>
       </template>
-    </a-form>
+    </a-form-model>
   </div>
 </template>
 

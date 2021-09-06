@@ -17,30 +17,30 @@
       <div class="open-control-dialog" @click="controlDrawerVisible = true"><a-icon type="setting" /></div>
     </div>
     <a-drawer :visible.sync="controlDrawerVisible" width="410" title="偏好设置" placement="right" @close="onClose" :closable="true">
-      <a-form :model="controlForm" size="small"  :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" class="control-form" @submit.native.prevent>
-        <a-form-item label="流程ID">
+      <a-form-model :model="controlForm" size="small"  :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" class="control-form" @submit.native.prevent :rules="formRules">
+        <a-form-model-item label="流程ID" prop="processId">
           <a-input v-model="controlForm.processId" @change="reloadProcessDesigner" />
-        </a-form-item>
-        <a-form-item label="流程名称">
+        </a-form-model-item>
+        <a-form-model-item label="流程名称" prop="processName">
           <a-input v-model="controlForm.processName" @change="reloadProcessDesigner" />
-        </a-form-item>
-        <a-form-item label="流转模拟">
+        </a-form-model-item>
+        <a-form-model-item label="流转模拟" prop="simulation">
           <a-switch v-model="controlForm.simulation" un-checked-children="停用" checked-children="启用" @change="reloadProcessDesigner" />
-        </a-form-item>
-        <a-form-item label="禁用双击">
+        </a-form-model-item>
+        <a-form-model-item label="禁用双击" prop="labelEditing">
           <a-switch v-model="controlForm.labelEditing" un-checked-children="停用" checked-children="启用" @change="changeLabelEditingStatus" />
-        </a-form-item>
-        <a-form-item label="隐藏label">
+        </a-form-model-item>
+        <a-form-model-item label="隐藏label" prop="labelVisible">
           <a-switch v-model="controlForm.labelVisible" un-checked-children="停用" checked-children="启用" @change="changeLabelVisibleStatus" />
-        </a-form-item>
-        <a-form-item label="流程引擎">
+        </a-form-model-item>
+        <a-form-model-item label="流程引擎" prop="prefix">
           <a-radio-group v-model="controlForm.prefix" @change="reloadProcessDesigner">
             <a-radio value="camunda">camunda</a-radio>
             <a-radio value="flowable">flowable</a-radio>
             <a-radio value="activiti">activiti</a-radio>
           </a-radio-group>
-        </a-form-item>
-        <a-form-item label="工具栏">
+        </a-form-model-item>
+        <a-form-model-item label="工具栏" prop="processId">
           <a-radio-group v-model="controlForm.headerButtonSize">
             <a-radio value="large">
               Large
@@ -52,8 +52,8 @@
               Small
             </a-radio>
           </a-radio-group>
-        </a-form-item>
-      </a-form>
+        </a-form-model-item>
+      </a-form-model>
     </a-drawer>
   </div>
 </template>
@@ -86,12 +86,20 @@ export default {
         simulation: true,
         labelEditing: false,
         labelVisible: false,
-        prefix: "activiti",
+        prefix: "camunda",
         headerButtonSize: "small",
         // additionalModel: []
         additionalModel: [CustomContentPadProvider, CustomPaletteProvider]
       },
-      addis: {}
+      addis: {},
+      formRules: {
+        processName: [
+          { required: true, message: '请输入名称!'},
+        ],
+        processId: [
+          { required: true, message: '请输入Id!'},
+        ],
+      },
     };
   },
   created() {
@@ -157,9 +165,9 @@ export default {
       // }
     },
     requestUserInfo() {
-      this.$axios.get("/user/userInfo").then(res => {
-        console.log(res);
-      });
+      // this.$axios.get("/user/userInfo").then(res => {
+      //   console.log(res);
+      // });
     }
   }
 };

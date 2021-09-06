@@ -10,8 +10,8 @@
           <span> {{i+1}} </span>
         </template>
       </a-table-column>
-      <a-table-column title="消息ID" dataIndex="id" :width="100" show-overflow-tooltip />
-      <a-table-column title="消息名称" dataIndex="name" :width="150" show-overflow-tooltip />
+      <a-table-column title="消息ID" dataIndex="id" :width="100" />
+      <a-table-column title="消息名称" dataIndex="name" :width="150" />
 <!--      <a-table-column title="操作" dataIndex="" :width="50">-->
 <!--        <template slot-scope="t,r" >-->
 <!--          <a-popconfirm title="确定删除吗?" @confirm="() => remove(r)">-->
@@ -30,19 +30,19 @@
           <span> {{i+1}} </span>
         </template>
       </a-table-column>
-      <a-table-column title="信号ID" dataIndex="id" :width="150" show-overflow-tooltip />
-      <a-table-column title="信号名称" dataIndex="name" :width="150" show-overflow-tooltip />
+      <a-table-column title="信号ID" dataIndex="id" :width="150" />
+      <a-table-column title="信号名称" dataIndex="name" :width="150" />
     </a-table>
 
-    <a-modal :visible.sync="modelVisible" :title="modelConfig.title" :close-on-click-modal="false" width="400px" append-to-body destroy-on-close>
-      <a-form :model="modelObjectForm" size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
-        <a-form-item :label="modelConfig.idLabel">
+    <a-modal :visible.sync="modelVisible" :title="modelConfig.title" :close-on-click-modal="false" :width="400" >
+      <a-form-model ref="form" :model="modelObjectForm" size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent :rules="formRules">
+        <a-form-model-item :label="modelConfig.idLabel" prop="id">
           <a-input v-model="modelObjectForm.id" allowClear />
-        </a-form-item>
-        <a-form-item :label="modelConfig.nameLabel">
+        </a-form-model-item>
+        <a-form-model-item :label="modelConfig.nameLabel" prop="name">
           <a-input v-model="modelObjectForm.name" allowClear />
-        </a-form-item>
-      </a-form>
+        </a-form-model-item>
+      </a-form-model>
       <template slot="footer">
         <a-button size="small" @click="modelVisible = false">取 消</a-button>
         <a-button size="small" type="default" @click="addNewObject">保 存</a-button>
@@ -59,7 +59,15 @@ export default {
       messageList: [],
       modelVisible: false,
       modelType: "",
-      modelObjectForm: {}
+      modelObjectForm: {},
+      formRules: {
+        name: [
+          { required: true, message: '请输入名称!'},
+        ],
+        id: [
+          { required: true, message: '请输入Id!'},
+        ],
+      },
     };
   },
   computed: {
@@ -105,21 +113,26 @@ export default {
       this.modelVisible = true;
     },
     addNewObject() {
-      if (this.modelType === "message") {
-        if (this.messageIdMap[this.modelObjectForm.id]) {
-          return this.$message.error("该消息已存在，请修改id后重新保存");
+      this.$refs.form.validate(valid => {
+        const that = this;
+        if (valid) {
+          if (that.modelType === "message") {
+            if (that.messageIdMap[that.modelObjectForm.id]) {
+              return that.$message.error("该消息已存在，请修改id后重新保存");
+            }
+            const messageRef = window.bpmnInstances.moddle.create("bpmn:Message", that.modelObjectForm);
+            that.rootElements.push(messageRef);
+          } else {
+            if (that.signalIdMap[that.modelObjectForm.id]) {
+              return that.$message.error("该信号已存在，请修改id后重新保存");
+            }
+            const signalRef = window.bpmnInstances.moddle.create("bpmn:Signal", that.modelObjectForm);
+            that.rootElements.push(signalRef);
+          }
+          that.modelVisible = false;
+          that.initDataList();
         }
-        const messageRef = window.bpmnInstances.moddle.create("bpmn:Message", this.modelObjectForm);
-        this.rootElements.push(messageRef);
-      } else {
-        if (this.signalIdMap[this.modelObjectForm.id]) {
-          return this.$message.error("该信号已存在，请修改id后重新保存");
-        }
-        const signalRef = window.bpmnInstances.moddle.create("bpmn:Signal", this.modelObjectForm);
-        this.rootElements.push(signalRef);
-      }
-      this.modelVisible = false;
-      this.initDataList();
+      })
     }
   }
 };

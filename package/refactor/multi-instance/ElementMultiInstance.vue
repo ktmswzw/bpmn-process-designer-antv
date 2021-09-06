@@ -1,30 +1,28 @@
 <template>
   <div class="panel-tab__content">
-    <a-form size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
-      <a-form-item label="回路特性">
+    <a-form-model size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
+      <a-form-model-item label="回路特性">
         <a-select v-model="loopCharacteristics" @change="changeLoopCharacteristicsType">
-          <!--bpmn:MultiInstanceLoopCharacteristics-->
-          <a-select-option label="并行多重事件" value="ParallelMultiInstance" />
-          <a-select-option label="时序多重事件" value="SequentialMultiInstance" />
-          <!--bpmn:StandardLoopCharacteristics-->
-          <a-select-option label="循环事件" value="StandardLoop" />
-          <a-select-option label="无" value="Null" />
+          <a-select-option title="并行多重事件" value="ParallelMultiInstance" >并行多重事件</a-select-option>
+          <a-select-option title="时序多重事件" value="SequentialMultiInstance" >时序多重事件</a-select-option>
+          <a-select-option title="循环事件" value="StandardLoop" >循环事件</a-select-option>
+          <a-select-option title="无" value="Null" >无</a-select-option>
         </a-select>
-      </a-form-item>
+      </a-form-model-item>
       <template v-if="loopCharacteristics === 'ParallelMultiInstance' || loopCharacteristics === 'SequentialMultiInstance'">
-        <a-form-item label="循环基数" key="loopCardinality">
+        <a-form-model-item label="循环基数" key="loopCardinality">
           <a-input v-model="loopInstanceForm.loopCardinality" allowClear @change="updateLoopCardinality" />
-        </a-form-item>
-        <a-form-item label="集合" key="collection">
+        </a-form-model-item>
+        <a-form-model-item label="集合" key="collection">
           <a-input v-model="loopInstanceForm.collection" allowClear @change="updateLoopBase" />
-        </a-form-item>
-        <a-form-item label="元素变量" key="elementVariable">
+        </a-form-model-item>
+        <a-form-model-item label="元素变量" key="elementVariable">
           <a-input v-model="loopInstanceForm.elementVariable" allowClear @change="updateLoopBase" />
-        </a-form-item>
-        <a-form-item label="完成条件" key="completionCondition">
+        </a-form-model-item>
+        <a-form-model-item label="完成条件" key="completionCondition">
           <a-input v-model="loopInstanceForm.completionCondition" allowClear @change="updateLoopCondition" />
-        </a-form-item>
-        <a-form-item label="异步状态" key="async">
+        </a-form-model-item>
+        <a-form-model-item label="异步状态" key="async">
           <a-checkbox v-model="loopInstanceForm.asyncBefore"  @change="updateLoopAsync('asyncBefore')" >异步前</a-checkbox>
           <a-checkbox v-model="loopInstanceForm.asyncAfter"  @change="updateLoopAsync('asyncAfter')" >异步后</a-checkbox>
           <a-checkbox
@@ -32,12 +30,12 @@
             v-if="loopInstanceForm.asyncAfter || loopInstanceForm.asyncBefore"
             @change="updateLoopAsync('exclusive')"
           >排除</a-checkbox>
-        </a-form-item>
-        <a-form-item label="重试周期" dataIndex="timeCycle" v-if="loopInstanceForm.asyncAfter || loopInstanceForm.asyncBefore" key="timeCycle">
+        </a-form-model-item>
+        <a-form-model-item label="重试周期" prop="timeCycle" v-if="loopInstanceForm.asyncAfter || loopInstanceForm.asyncBefore" key="timeCycle">
           <a-input v-model="loopInstanceForm.timeCycle" allowClear @change="updateLoopTimeCycle" />
-        </a-form-item>
+        </a-form-model-item>
       </template>
-    </a-form>
+    </a-form-model>
   </div>
 </template>
 

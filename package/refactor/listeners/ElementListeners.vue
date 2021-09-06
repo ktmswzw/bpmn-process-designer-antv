@@ -1,127 +1,117 @@
 <template>
   <div class="panel-tab__content">
-    <a-table :dataSource="elementListenersList" size="small" border>
-      <a-table-column title="#"  :width="50">
-        <template slot-scope="t,r,i" >
-          <span> {{i+1}} </span>
-        </template>
-      </a-table-column>
-      <a-table-column title="事件类型" width="100" dataIndex="event" />
-      <a-table-column title="监听器类型" width="100" show-overflow-tooltip :formatter="row => listenerTypeObject[row.listenerType]" />
-      <a-table-column title="操作" width="90px">
-        <template slot-scope="{ row, $index }">
-          <a-button size="small" type="primary" @click="openListenerForm(row, $index)">编辑</a-button>
-          <a-divider direction="vertical" />
-          <a-button size="small" type="primary" style="color: #ff4d4f" @click="removeListener(row, $index)">移除</a-button>
-        </template>
-      </a-table-column>
+    <a-table :dataSource="elementListenersList" rowKey="id" :columns="listenColumns" size="small" bordered>
+      <span slot="action" slot-scope="text, record, index">
+          <a @click="openListenerForm(record, index)">Edit</a>
+          <a-divider type="vertical"/>
+          <a-popconfirm title="确定删除吗?" @confirm="() => removeListener(record, index)">
+            <a>Del</a>
+          </a-popconfirm>
+        </span>
     </a-table>
     <div class="element-drawer__button">
       <a-button size="small" type="primary" icon="plus" @click="openListenerForm(null)">添加监听器</a-button>
     </div>
 
     <!-- 监听器 编辑/创建 部分 -->
-    <a-drawer :visible.sync="listenerFormModelVisible" title="执行监听器" :size="`${width}px`" append-to-body destroy-on-close>
-      <a-form size="small" :model="listenerForm" label-width="96px" ref="listenerFormRef" @submit.native.prevent>
-        <a-form-item label="事件类型" dataIndex="event" :rules="{ required: true, trigger: ['blur', 'change'] }">
+    <a-drawer :visible.sync="listenerFormModelVisible" title="执行监听器" width="450" placement="right" @close="onClose"
+              :closable="true">
+      <a-form-model :model="listenerForm" size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }"
+                    ref="listenerFormRef" @submit.native.prevent :rules="listenerFormRules">
+        <a-input type="hidden" v-model="listenerForm.id"/>
+        <a-form-model-item label="事件类型" prop="event">
           <a-select v-model="listenerForm.event">
-            <a-select-option label="start" value="start" />
-            <a-select-option label="end" value="end" />
+            <a-select-option value="start">start</a-select-option>
+            <a-select-option value="end">end</a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item label="监听器类型" dataIndex="listenerType" :rules="{ required: true, trigger: ['blur', 'change'] }">
+        </a-form-model-item>
+        <a-form-model-item label="监听器" prop="listenerType">
           <a-select v-model="listenerForm.listenerType">
-            <a-select-option v-for="i in Object.keys(listenerTypeObject)" :key="i" :label="listenerTypeObject[i]" :value="i" />
+            <a-select-option v-for="i in Object.keys(listenerTypeObject)" :key="i" :value="i">
+              {{ listenerTypeObject[i] }}
+            </a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item
-          v-if="listenerForm.listenerType === 'classListener'"
-          label="Java类"
-          dataIndex="class"
-          key="listener-class"
-          :rules="{ required: true, trigger: ['blur', 'change'] }"
+        </a-form-model-item>
+        <a-form-model-item
+            v-if="listenerForm.listenerType === 'classListener'"
+            label="Java类"
+            prop="class"
+            key="listener-class"
         >
-          <a-input v-model="listenerForm.class" allowClear />
-        </a-form-item>
-        <a-form-item
-          v-if="listenerForm.listenerType === 'expressionListener'"
-          label="表达式"
-          dataIndex="expression"
-          key="listener-expression"
-          :rules="{ required: true, trigger: ['blur', 'change'] }"
+          <a-input v-model="listenerForm.class" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item
+            v-if="listenerForm.listenerType === 'expressionListener'"
+            label="表达式"
+            prop="expression"
+            key="listener-expression"
         >
-          <a-input v-model="listenerForm.expression" allowClear />
-        </a-form-item>
-        <a-form-item
-          v-if="listenerForm.listenerType === 'delegateExpressionListener'"
-          label="代理表达式"
-          dataIndex="delegateExpression"
-          key="listener-delegate"
-          :rules="{ required: true, trigger: ['blur', 'change'] }"
+          <a-input v-model="listenerForm.expression" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item
+            v-if="listenerForm.listenerType === 'delegateExpressionListener'"
+            label="代理表达式"
+            prop="delegateExpression"
+            key="listener-delegate"
         >
-          <a-input v-model="listenerForm.delegateExpression" allowClear />
-        </a-form-item>
+          <a-input v-model="listenerForm.delegateExpression" allowClear/>
+        </a-form-model-item>
         <template v-if="listenerForm.listenerType === 'scriptListener'">
-          <a-form-item
-            label="脚本格式"
-            dataIndex="scriptFormat"
-            key="listener-script-format"
-            :rules="{ required: true, trigger: ['blur', 'change'], message: '请填写脚本格式' }"
+          <a-form-model-item
+              label="脚本格式"
+              prop="scriptFormat"
+              key="listener-script-format"
+              :rules="{ required: true, trigger: ['blur', 'change'], message: '请填写脚本格式' }"
           >
-            <a-input v-model="listenerForm.scriptFormat" allowClear />
-          </a-form-item>
-          <a-form-item
-            label="脚本类型"
-            dataIndex="scriptType"
-            key="listener-script-type"
-            :rules="{ required: true, trigger: ['blur', 'change'], message: '请选择脚本类型' }"
+            <a-input v-model="listenerForm.scriptFormat" allowClear/>
+          </a-form-model-item>
+          <a-form-model-item
+              label="脚本类型"
+              prop="scriptType"
+              key="listener-script-type"
+              :rules="{ required: true, trigger: ['blur', 'change'], message: '请选择脚本类型' }"
           >
             <a-select v-model="listenerForm.scriptType">
-              <a-select-option label="内联脚本" value="inlineScript" />
-              <a-select-option label="外部脚本" value="externalScript" />
+              <a-select-option value="inlineScript">内联脚本</a-select-option>
+              <a-select-option value="externalScript">外部脚本</a-select-option>
             </a-select>
-          </a-form-item>
-          <a-form-item
-            v-if="listenerForm.scriptType === 'inlineScript'"
-            label="脚本内容"
-            dataIndex="value"
-            key="listener-script"
-            :rules="{ required: true, trigger: ['blur', 'change'], message: '请填写脚本内容' }"
+          </a-form-model-item>
+          <a-form-model-item
+              v-if="listenerForm.scriptType === 'inlineScript'"
+              label="脚本内容"
+              prop="value"
+              key="listener-script"
+              :rules="{ required: true, trigger: ['blur', 'change'], message: '请填写脚本内容' }"
           >
-            <a-input v-model="listenerForm.value" allowClear />
-          </a-form-item>
-          <a-form-item
-            v-if="listenerForm.scriptType === 'externalScript'"
-            label="资源地址"
-            dataIndex="resource"
-            key="listener-resource"
-            :rules="{ required: true, trigger: ['blur', 'change'], message: '请填写资源地址' }"
+            <a-input v-model="listenerForm.value" allowClear/>
+          </a-form-model-item>
+          <a-form-model-item
+              v-if="listenerForm.scriptType === 'externalScript'"
+              label="资源地址"
+              prop="resource"
+              key="listener-resource"
+              :rules="{ required: true, trigger: ['blur', 'change'], message: '请填写资源地址' }"
           >
-            <a-input v-model="listenerForm.resource" allowClear />
-          </a-form-item>
+            <a-input v-model="listenerForm.resource" allowClear/>
+          </a-form-model-item>
         </template>
-      </a-form>
-      <a-divider />
-      <p class="listener-filed__title">
-        <span><i class="el-icon-menu"></i>注入字段：</span>
-        <a-button size="small" type="primary" @click="openListenerFieldForm(null)">添加字段</a-button>
-      </p>
-      <a-table :dataSource="fieldsListOfListener" size="small" max-height="240" bordered fit style="flex: none">
-        <a-table-column title="#"  :width="50">
-          <template slot-scope="t,r,i" >
-            <span> {{i+1}} </span>
-          </template>
-        </a-table-column>
-        <a-table-column title="字段名称" width="100" dataIndex="name" />
-        <a-table-column title="字段类型" min-width="80px" show-overflow-tooltip :formatter="row => fieldTypeObject[row.fieldType]" />
-        <a-table-column title="字段值/表达式" width="100" show-overflow-tooltip :formatter="row => row.string || row.expression" />
-        <a-table-column title="操作" width="100px">
-          <template slot-scope="{ row, $index }">
-            <a-button size="small" type="default" @click="openListenerFieldForm(row, $index)">编辑</a-button>
-            <a-divider direction="vertical" />
-            <a-button size="small" type="default" style="color: #ff4d4f" @click="removeListenerField(row, $index)">移除</a-button>
-          </template>
-        </a-table-column>
+      </a-form-model>
+      <a-divider/>
+      <a-row class="listener-filed__title">
+        <a-col span="20"><span><a-icon type="appstore"/>注入字段：</span></a-col>
+        <a-col span="4">
+          <a @click="openListenerFieldForm(null)">添加字段</a>
+        </a-col>
+      </a-row>
+      <a-table :dataSource="fieldsListOfListener"
+               rowKey="name" :columns="columns" size="small" bordered style="flex: none">
+        <span slot="action" slot-scope="text, record, index">
+          <a @click="openListenerFieldForm(record, index)">Edit</a>
+          <a-divider type="vertical"/>
+          <a-popconfirm title="确定删除吗?" @confirm="() => removeListenerField(record, index)">
+            <a>Del</a>
+          </a-popconfirm>
+        </span>
       </a-table>
 
       <div class="element-drawer__button">
@@ -131,35 +121,37 @@
     </a-drawer>
 
     <!-- 注入西段 编辑/创建 部分 -->
-    <a-modal title="字段配置" :visible.sync="listenerFieldFormModelVisible" width="600px" append-to-body destroy-on-close>
-      <a-form :model="listenerFieldForm" size="small" label-width="96px" ref="listenerFieldFormRef" style="height: 136px" @submit.native.prevent>
-        <a-form-item label="字段名称：" dataIndex="name" :rules="{ required: true, trigger: ['blur', 'change'] }">
-          <a-input v-model="listenerFieldForm.name" allowClear />
-        </a-form-item>
-        <a-form-item label="字段类型：" dataIndex="fieldType" :rules="{ required: true, trigger: ['blur', 'change'] }">
+    <a-modal title="字段配置" :visible.sync="listenerFieldFormModelVisible" :width="600" >
+      <a-form-model :model="listenerFieldForm" size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }"
+                    ref="listenerFieldFormRef"
+                    style="height: 130px" @submit.native.prevent :rules="listenerField">
+        <a-form-model-item label="字段名称：" prop="name">
+          <a-input v-model="listenerFieldForm.name" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item label="字段类型：" prop="fieldType">
           <a-select v-model="listenerFieldForm.fieldType">
-            <a-select-option v-for="i in Object.keys(fieldTypeObject)" :key="i" :label="fieldTypeObject[i]" :value="i" />
+            <a-select-option v-for="i in Object.keys(fieldTypeObject)" :key="i" :value="i">{{ fieldTypeObject[i] }}
+            </a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item
-          v-if="listenerFieldForm.fieldType === 'string'"
-          label="字段值："
-          dataIndex="string"
-          key="field-string"
-          :rules="{ required: true, trigger: ['blur', 'change'] }"
+        </a-form-model-item>
+        <a-form-model-item
+            v-if="listenerFieldForm.fieldType === 'string'"
+            label="字段值："
+            prop="string"
+            key="field-string"
         >
-          <a-input v-model="listenerFieldForm.string" allowClear />
-        </a-form-item>
-        <a-form-item
-          v-if="listenerFieldForm.fieldType === 'expression'"
-          label="表达式："
-          dataIndex="expression"
-          key="field-expression"
-          :rules="{ required: true, trigger: ['blur', 'change'] }"
+          <a-input v-model="listenerFieldForm.string" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item
+            v-if="listenerFieldForm.fieldType === 'expression'"
+            label="表达式："
+            prop="expression"
+            key="field-expression"
+
         >
-          <a-input v-model="listenerFieldForm.expression" allowClear />
-        </a-form-item>
-      </a-form>
+          <a-input v-model="listenerFieldForm.expression" allowClear/>
+        </a-form-model-item>
+      </a-form-model>
       <template slot="footer">
         <a-button size="small" @click="listenerFieldFormModelVisible = false">取 消</a-button>
         <a-button size="small" type="primary" @click="saveListenerFiled">确 定</a-button>
@@ -168,8 +160,8 @@
   </div>
 </template>
 <script>
-import { createListenerObject, updateElementExtensions } from "../../utils";
-import { initListenerType, initListenerForm, listenerType, fieldType } from "./utilSelf";
+import {createListenerObject, updateElementExtensions, uuid} from "../../utils";
+import {initListenerType, initListenerForm, listenerType, fieldType} from "./utilSelf";
 
 export default {
   name: "ElementListeners",
@@ -192,7 +184,137 @@ export default {
       editingListenerIndex: -1, // 监听器所在下标，-1 为新增
       editingListenerFieldIndex: -1, // 字段所在下标，-1 为新增
       listenerTypeObject: listenerType,
-      fieldTypeObject: fieldType
+      fieldTypeObject: fieldType,
+
+      listenColumns: [
+        {
+          title: 'ID',
+          dataIndex: 'id',
+          key: 'rowIndex',
+          width: 40,
+          align: "center",
+          customRender: function (t, r, index) {
+            return parseInt(index) + 1;
+          }
+        },
+        {
+          title: '事件类型',
+          align: "center",
+          width: 60,
+          dataIndex: 'event'
+        },
+        {
+          title: '监听类型',
+          align: "center",
+          width: 60,
+          dataIndex: 'listenerType',
+          customRender: (t, row, index) => {
+            return listenerType[row.listenerType]
+          }
+        },
+        {
+          title: '值',
+          align: "center",
+          width: 100,
+          dataIndex: 'value',
+          customRender: (t, row, index) => {
+            if (row.listenerType === 'classListener')
+              return row.class
+            if (row.listenerType === 'expressionListener')
+              return row.expression
+            if (row.listenerType === 'delegateExpressionListener')
+              return row.delegateExpression
+            if (row.listenerType === 'scriptListener') {
+              if (row.scriptType === 'inlineScript')
+                return row.scriptFormat + ' - ' + row.scriptType + ' - ' + row.value
+              else
+                return row.scriptFormat + ' - ' + row.scriptType + ' - ' + row.resource
+            }
+          }
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: "center",
+          width: 60,
+          scopedSlots: {customRender: 'action'}
+        }
+      ],
+      columns: [
+        {
+          title: '名称',
+          align: "center",
+          width: 60,
+          dataIndex: 'name'
+        },
+        {
+          title: '类型',
+          align: "center",
+          width: 60,
+          dataIndex: 'fieldType',
+          customRender: (t, row, index) => {
+            return fieldType[row.fieldType]
+          }
+        },
+        {
+          title: '字段值/表达式',
+          align: "center",
+          dataIndex: 'string',
+          customRender: function (t, row, index) {
+            return row.string || row.expression
+          }
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: "center",
+          width: 100,
+          scopedSlots: {customRender: 'action'}
+        }
+      ],
+      listenerFormRules: {
+        event: [
+          {required: true, message: '请输入事件类型!'},
+        ],
+        listenerType: [
+          {required: true, message: '请输入监听器!'},
+        ],
+        class: [
+          {required: true, message: '请输入Java类'},
+        ],
+        expression: [
+          {required: true, message: '请输入表达式!'},
+        ],
+        delegateExpression: [
+          {required: true, message: '请输入代理表达式'},
+        ],
+        scriptFormat: [
+          {required: true, message: '请输入脚本格式'},
+        ],
+        scriptType: [
+          {required: true, message: '请输入脚本类型'},
+        ],
+        value: [
+          {required: true, message: '请输入脚本内容!'},
+        ],
+        resource: [
+          {required: true, message: '请输入资源地址!'},
+        ],
+      },
+      listenerField: {
+        name: [
+          {required: true, message: '请输入名称!'},
+        ],
+        fieldType: [
+          {required: true, message: '请输入字段类型!'},
+        ],
+        string: [
+          {required: true, message: '请输入字段值'},
+        ],
+        expression: [
+          {required: true, message: '请输入表达式!'},
+        ],
+      },
     };
   },
   watch: {
@@ -208,8 +330,12 @@ export default {
       this.bpmnElement = window.bpmnInstances.bpmnElement;
       this.otherExtensionList = [];
       this.bpmnElementListeners =
-        this.bpmnElement.businessObject?.extensionElements?.values?.filter(ex => ex.$type === `${this.prefix}:ExecutionListener`) ?? [];
+          this.bpmnElement.businessObject?.extensionElements?.values?.filter(ex => ex.$type === `${this.prefix}:ExecutionListener`) ?? [];
       this.elementListenersList = this.bpmnElementListeners.map(listener => initListenerType(listener));
+    },
+
+    onClose() {
+      this.listenerFormModelVisible = false;
     },
     // 打开 监听器详情 侧边栏
     openListenerForm(listener, index) {
@@ -217,88 +343,82 @@ export default {
         this.listenerForm = initListenerForm(listener);
         this.editingListenerIndex = index;
       } else {
-        this.listenerForm = {};
+        this.listenerForm = {id: uuid()};
         this.editingListenerIndex = -1; // 标记为新增
       }
       if (listener && listener.fields) {
-        this.fieldsListOfListener = listener.fields.map(field => ({ ...field, fieldType: field.string ? "string" : "expression" }));
+        this.fieldsListOfListener = listener.fields.map(field => ({
+          ...field,
+          fieldType: field.string ? "string" : "expression"
+        }));
       } else {
         this.fieldsListOfListener = [];
         this.$set(this.listenerForm, "fields", []);
       }
       // 打开侧边栏并清楚验证状态
       this.listenerFormModelVisible = true;
-      this.$nextTick(() => {
-        if (this.$refs["listenerFormRef"]) this.$refs["listenerFormRef"].clearValidate();
-      });
     },
     // 打开监听器字段编辑弹窗
     openListenerFieldForm(field, index) {
       this.listenerFieldForm = field ? JSON.parse(JSON.stringify(field)) : {};
       this.editingListenerFieldIndex = field ? index : -1;
       this.listenerFieldFormModelVisible = true;
-      this.$nextTick(() => {
-        if (this.$refs["listenerFieldFormRef"]) this.$refs["listenerFieldFormRef"].clearValidate();
-      });
     },
     // 保存监听器注入字段
-    async saveListenerFiled() {
-      let validateStatus = await this.$refs["listenerFieldFormRef"].validate();
-      if (!validateStatus) return; // 验证不通过直接返回
-      if (this.editingListenerFieldIndex === -1) {
-        this.fieldsListOfListener.push(this.listenerFieldForm);
-        this.listenerForm.fields.push(this.listenerFieldForm);
-      } else {
-        this.fieldsListOfListener.splice(this.editingListenerFieldIndex, 1, this.listenerFieldForm);
-        this.listenerForm.fields.splice(this.editingListenerFieldIndex, 1, this.listenerFieldForm);
-      }
-      this.listenerFieldFormModelVisible = false;
-      this.$nextTick(() => (this.listenerFieldForm = {}));
+    saveListenerFiled() {
+      const that = this;
+      this.$refs.listenerFieldFormRef.validate(valid => {
+        if (valid) {
+          if (that.editingListenerFieldIndex === -1) {
+            that.fieldsListOfListener.push(that.listenerFieldForm);
+            that.listenerForm.fields.push(that.listenerFieldForm);
+          } else {
+            that.fieldsListOfListener.splice(that.editingListenerFieldIndex, 1, that.listenerFieldForm);
+            that.listenerForm.fields.splice(that.editingListenerFieldIndex, 1, that.listenerFieldForm);
+          }
+          that.listenerFieldFormModelVisible = false;
+          that.$nextTick(() => (that.listenerFieldForm = {}));
+        }
+      })
     },
     // 移除监听器字段
     removeListenerField(field, index) {
-      this.$confirm("确认移除该字段吗？", "提示", {
-        confirmButtonText: "确 认",
-        cancelButtonText: "取 消"
-      })
-        .then(() => {
-          this.fieldsListOfListener.splice(index, 1);
-          this.listenerForm.fields.splice(index, 1);
-        })
-        .catch(() => console.info("操作取消"));
+      this.fieldsListOfListener.splice(index, 1);
+      this.listenerForm.fields.splice(index, 1);
     },
     // 移除监听器
     removeListener(listener, index) {
-      this.$confirm("确认移除该监听器吗？", "提示", {
-        confirmButtonText: "确 认",
-        cancelButtonText: "取 消"
-      })
-        .then(() => {
-          this.bpmnElementListeners.splice(index, 1);
-          this.elementListenersList.splice(index, 1);
-          updateElementExtensions(this.bpmnElement, this.otherExtensionList.concat(this.bpmnElementListeners));
-        })
-        .catch(() => console.info("操作取消"));
+      this.bpmnElementListeners.splice(index, 1);
+      this.elementListenersList.splice(index, 1);
+      updateElementExtensions(this.bpmnElement, this.otherExtensionList.concat(this.bpmnElementListeners));
     },
     // 保存监听器配置
     async saveListenerConfig() {
-      let validateStatus = await this.$refs["listenerFormRef"].validate();
-      if (!validateStatus) return; // 验证不通过直接返回
-      const listenerObject = createListenerObject(this.listenerForm, false, this.prefix);
-      if (this.editingListenerIndex === -1) {
-        this.bpmnElementListeners.push(listenerObject);
-        this.elementListenersList.push(this.listenerForm);
-      } else {
-        this.bpmnElementListeners.splice(this.editingListenerIndex, 1, listenerObject);
-        this.elementListenersList.splice(this.editingListenerIndex, 1, this.listenerForm);
-      }
-      // 保存其他配置
-      this.otherExtensionList = this.bpmnElement.businessObject?.extensionElements?.values?.filter(ex => ex.$type !== `${this.prefix}:ExecutionListener`) ?? [];
-      updateElementExtensions(this.bpmnElement, this.otherExtensionList.concat(this.bpmnElementListeners));
-      // 4. 隐藏侧边栏
-      this.listenerFormModelVisible = false;
-      this.listenerForm = {};
+      const that = this;
+      that.$refs.listenerFormRef.validate(valid => {
+        if (valid) {
+          const listenerObject = createListenerObject(that.listenerForm, false, that.prefix);
+          if (that.editingListenerIndex === -1) {
+            that.bpmnElementListeners.push(listenerObject);
+            that.elementListenersList.push(that.listenerForm);
+          } else {
+            that.bpmnElementListeners.splice(that.editingListenerIndex, 1, listenerObject);
+            that.elementListenersList.splice(that.editingListenerIndex, 1, that.listenerForm);
+          }
+          // 保存其他配置
+          that.otherExtensionList = that.bpmnElement.businessObject?.extensionElements?.values?.filter(ex => ex.$type !== `${that.prefix}:ExecutionListener`) ?? [];
+          updateElementExtensions(that.bpmnElement, that.otherExtensionList.concat(that.bpmnElementListeners));
+          // 4. 隐藏侧边栏
+          that.listenerFormModelVisible = false;
+          that.listenerForm = {};
+        }
+      })
     }
   }
 };
 </script>
+<style lang="css">
+.ant-form-item {
+  margin: 0 0 5px;
+}
+</style>

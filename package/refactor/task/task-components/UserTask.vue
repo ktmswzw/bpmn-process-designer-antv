@@ -1,29 +1,29 @@
 <template>
   <div style="margin-top: 16px">
-    <a-form-item label="处理用户">
+    <a-form-model-item label="处理用户">
       <a-select v-model="userTaskForm.assignee" @change="updateElementTask('assignee')">
-        <a-select-option v-for="ak in mockData" :key="'ass-' + ak" :label="`用户${ak}`" :value="`user${ak}`" />
+        <a-select-option v-for="ak in mockData" :key="'ass-' + ak"  :value="`user${ak}`" >{{`用户${ak}`}}</a-select-option>
       </a-select>
-    </a-form-item>
-    <a-form-item label="候选用户">
+    </a-form-model-item>
+    <a-form-model-item label="候选用户">
       <a-select v-model="userTaskForm.candidateUsers" multiple collapse-tags @change="updateElementTask('candidateUsers')">
-        <a-select-option v-for="uk in mockData" :key="'user-' + uk" :label="`用户${uk}`" :value="`user${uk}`" />
+        <a-select-option v-for="uk in mockData" :key="'user-' + uk" :value="`user${uk}`" >{{`用户${uk}`}}</a-select-option>
       </a-select>
-    </a-form-item>
-    <a-form-item label="候选分组">
+    </a-form-model-item>
+    <a-form-model-item label="候选分组">
       <a-select v-model="userTaskForm.candidateGroups" multiple collapse-tags @change="updateElementTask('candidateGroups')">
-        <a-select-option v-for="gk in mockData" :key="'ass-' + gk" :label="`分组${gk}`" :value="`group${gk}`" />
+        <a-select-option v-for="gk in mockData" :key="'ass-' + gk" :value="`group${gk}`" >{{`分组${gk}`}}</a-select-option>
       </a-select>
-    </a-form-item>
-    <a-form-item label="到期时间">
-      <a-input v-model="userTaskForm.dueDate" allowClear @change="updateElementTask('dueDate')" />
-    </a-form-item>
-    <a-form-item label="跟踪时间">
-      <a-input v-model="userTaskForm.followUpDate" allowClear @change="updateElementTask('followUpDate')" />
-    </a-form-item>
-    <a-form-item label="优先级">
+    </a-form-model-item>
+    <a-form-model-item label="到期时间">
+      <a-date-picker v-model="userTaskForm.dueDate" allowClear @change="updateElementTask('dueDate')" />
+    </a-form-model-item>
+    <a-form-model-item label="跟踪时间">
+      <a-date-picker v-model="userTaskForm.followUpDate" allowClear @change="updateElementTask('followUpDate')" />
+    </a-form-model-item>
+    <a-form-model-item label="优先级">
       <a-input v-model="userTaskForm.priority" allowClear @change="updateElementTask('priority')" />
-    </a-form-item>
+    </a-form-model-item>
   </div>
 </template>
 

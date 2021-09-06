@@ -20,7 +20,7 @@
     "build": "vue-cli-service build --report"
   },
   "dependencies": {
-    "bpmn-js-token-simulation": "^0.10.0",
+    "bpmn-js-token-simulation": "^0.21.1",
     "core-js": "^3.8.1",
     "highlight.js": "^10.5.0",
     "min-dash": "^3.5.2",
@@ -38,7 +38,7 @@
     "babel-eslint": "^10.1.0",
     "bpmn-js": "^8.7.3",
     "bpmn-js-properties-panel": "^0.44.0",
-    "camunda-bpmn-moddle": "^4.5.0",
+    "camunda-bpmn-moddle": "^5.1.2",
     "compression-webpack-plugin": "^6.1.1",
     "ant-design-vue": "^1.7.8",
     "eslint": "^6.7.2",

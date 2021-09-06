@@ -1,27 +1,27 @@
 <template>
   <div class="panel-tab__content">
-    <a-form size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
-      <a-form-item label="ID">
+    <a-form-model size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
+      <a-form-model-item label="ID">
         <a-input
           v-model="elementBaseInfo.id"
           :disabled="idEditDisabled || elementBaseInfo.$type === 'bpmn:Process'"
           allowClear
           @change="updateBaseInfo('id')"
         />
-      </a-form-item>
-      <a-form-item label="名称">
+      </a-form-model-item>
+      <a-form-model-item label="名称">
         <a-input v-model="elementBaseInfo.name" allowClear @change="updateBaseInfo('name')" />
-      </a-form-item>
+      </a-form-model-item>
       <!--流程的基础属性-->
       <template v-if="elementBaseInfo.$type === 'bpmn:Process'">
-        <a-form-item label="版本标签">
+        <a-form-model-item label="版本标签">
           <a-input v-model="elementBaseInfo.versionTag" allowClear @change="updateBaseInfo('versionTag')" />
-        </a-form-item>
-        <a-form-item label="可执行">
+        </a-form-model-item>
+        <a-form-model-item label="可执行">
           <a-switch v-model="elementBaseInfo.isExecutable" checked-children="是" un-checked-children="否" @change="updateBaseInfo('isExecutable')" />
-        </a-form-item>
+        </a-form-model-item>
       </template>
-    </a-form>
+    </a-form-model>
   </div>
 </template>
 <script>

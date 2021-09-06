@@ -1,22 +1,22 @@
 <template>
   <div style="margin-top: 16px">
-    <a-form-item label="消息实例">
+    <a-form-model-item label="消息实例">
       <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap">
         <a-select v-model="bindMessageId" @change="updateTaskMessage">
-          <a-select-option v-for="id in Object.keys(messageMap)" :value="id" :label="messageMap[id]" :key="id" />
+          <a-select-option v-for="id in Object.keys(messageMap)" :value="id" :title="messageMap[id]" :key="id" >{{messageMap[id]}}</a-select-option>
         </a-select>
         <a-button size="small" type="primary" icon="plus" style="margin-left: 8px" @click="openMessageModel" />
       </div>
-    </a-form-item>
-    <a-modal :visible.sync="messageModelVisible" :close-on-click-modal="false" title="创建新消息" width="400px" append-to-body destroy-on-close>
-      <a-form :model="newMessageForm" size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
-        <a-form-item label="消息ID">
+    </a-form-model-item>
+    <a-modal :visible.sync="messageModelVisible" :close-on-click-modal="false" title="创建新消息" :width="400" >
+      <a-form-model :model="newMessageForm" size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
+        <a-form-model-item label="消息ID">
           <a-input v-model="newMessageForm.id" allowClear />
-        </a-form-item>
-        <a-form-item label="消息名称">
+        </a-form-model-item>
+        <a-form-model-item label="消息名称">
           <a-input v-model="newMessageForm.name" allowClear />
-        </a-form-item>
-      </a-form>
+        </a-form-model-item>
+      </a-form-model>
       <template slot="footer">
         <a-button size="small" type="primary" @click="createNewMessage">确 认</a-button>
       </template>

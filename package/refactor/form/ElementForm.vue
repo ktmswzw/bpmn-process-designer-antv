@@ -1,32 +1,30 @@
 <template>
   <div class="panel-tab__content">
-    <a-form size="small" label-width="80px" @submit.native.prevent>
-      <a-form-item label="表单标识">
-        <a-input v-model="formKey" allowClear @change="updateElementFormKey" />
-      </a-form-item>
-      <a-form-item label="业务标识">
-        <a-select v-model="businessKey" @change="updateElementBusinessKey">
-          <a-select-option v-for="i in fieldList" :key="i.id" :value="i.id" :label="i.label" />
-          <a-select-option label="无" value="" />
+    <a-form-model size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
+      <a-form-model-item label="表单标识">
+        <a-input v-model="formKey" allowClear @change="updateElementFormKey"/>
+      </a-form-model-item>
+      <a-form-model-item label="业务标识">
+        <a-select @change="updateElementBusinessKey" placeholder="请选择业务标识" :trigger-change="true">
+          <a-select-option v-for="(item) in fieldList" :key="item.id" :value="item.id">
+              <span style="display: inline-block;width: 100%" :title=" item.name">
+                {{ item.label}}
+              </span>
+          </a-select-option>
         </a-select>
-      </a-form-item>
-    </a-form>
+      </a-form-model-item>
+    </a-form-model>
 
     <!--字段列表-->
     <div class="element-property list-property">
-      <a-divider><i class="el-icon-coin"></i> 表单字段</a-divider>
-      <a-table :dataSource="fieldList" size="small" max-height="240" bordered fit>
-        <a-table-column title="序号" type="index" width="50px" />
-        <a-table-column title="字段名称" dataIndex="label" min-width="80px" show-overflow-tooltip />
-        <a-table-column title="字段类型" dataIndex="type" min-width="80px" :formatter="row => fieldType[row.type] || row.type" show-overflow-tooltip />
-        <a-table-column title="默认值" dataIndex="defaultValue" min-width="80px" show-overflow-tooltip />
-        <a-table-column title="操作" width="90px">
-          <template slot-scope="{ row, $index }">
-            <a-button size="small" type="default" @click="openFieldForm(row, $index)">编辑</a-button>
-            <a-divider direction="vertical" />
-            <a-button size="small" type="default" style="color: #ff4d4f" @click="removeField(row, $index)">移除</a-button>
-          </template>
-        </a-table-column>
+      <a-table :dataSource="fieldList" rowKey="label" :columns="fieldColumns" size="small"  bordered>
+        <span slot="action" slot-scope="text, record, index">
+          <a @click="openFieldForm(record, index)">Edit</a>
+          <a-divider type="vertical"/>
+          <a-popconfirm title="确定删除吗?" @confirm="() => removeField(record, index)">
+            <a>Del</a>
+          </a-popconfirm>
+        </span>
       </a-table>
     </div>
     <div class="element-drawer__button">
@@ -34,99 +32,80 @@
     </div>
 
     <!--字段配置侧边栏-->
-    <a-drawer :visible.sync="fieldModelVisible" title="字段配置" :size="`${width}px`" append-to-body destroy-on-close>
-      <a-form :model="formFieldForm" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" size="small" @submit.native.prevent>
-        <a-form-item label="字段ID">
-          <a-input v-model="formFieldForm.id" allowClear />
-        </a-form-item>
-        <a-form-item label="类型">
+    <a-drawer :visible.sync="fieldModelVisible" title="字段配置" width="450" placement="right" @close="onClose"
+              :closable="true">
+      <a-form-model :model="formFieldForm" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" size="small"
+                    @submit.native.prevent>
+        <a-form-model-item label="字段ID">
+          <a-input v-model="formFieldForm.id" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item label="类型">
           <a-select v-model="formFieldForm.typeType" placeholder="请选择字段类型" allowClear @change="changeFieldTypeType">
-            <a-select-option v-for="(value, key) of fieldType" :label="value" :value="key" :key="key" />
+              <a-select-option v-for="(value, key) of fieldType" :value="key" :key="key">{{ value }}</a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item label="类型名称" v-if="formFieldForm.typeType === 'custom'">
-          <a-input v-model="formFieldForm.type" allowClear />
-        </a-form-item>
-        <a-form-item label="名称">
-          <a-input v-model="formFieldForm.label" allowClear />
-        </a-form-item>
-        <a-form-item label="时间格式" v-if="formFieldForm.typeType === 'date'">
-          <a-input v-model="formFieldForm.datePattern" allowClear />
-        </a-form-item>
-        <a-form-item label="默认值">
-          <a-input v-model="formFieldForm.defaultValue" allowClear />
-        </a-form-item>
-      </a-form>
+        </a-form-model-item>
+        <a-form-model-item label="类型名称" v-if="formFieldForm.typeType === 'custom'">
+          <a-input v-model="formFieldForm.type" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item label="名称">
+          <a-input v-model="formFieldForm.label" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item label="时间格式" v-if="formFieldForm.typeType === 'date'">
+          <a-input v-model="formFieldForm.datePattern" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item label="默认值">
+          <a-input v-model="formFieldForm.defaultValue" allowClear/>
+        </a-form-model-item>
+      </a-form-model>
 
       <!-- 枚举值设置 -->
       <template v-if="formFieldForm.type === 'enum'">
-        <a-divider key="enum-divider" />
-        <p class="listener-filed__title" key="enum-title">
-          <span><i class="el-icon-menu"></i>枚举值列表：</span>
-          <a-button size="small" type="primary" @click="openFieldOptionForm(null, -1, 'enum')">添加枚举值</a-button>
-        </p>
-        <a-table :dataSource="fieldEnumList" size="small" key="enum-table" max-height="240" bordered fit>
-          <a-table-column title="#"  :width="50">
-            <template slot-scope="t,r,i" >
-              <span> {{i+1}} </span>
-            </template>
-          </a-table-column>
-          <a-table-column title="枚举值编号" dataIndex="id" width="100" show-overflow-tooltip />
-          <a-table-column title="枚举值名称" dataIndex="name" width="100" show-overflow-tooltip />
-          <a-table-column title="操作" width="90px">
-            <template slot-scope="{ row, $index }">
-              <a-button size="small" type="default" @click="openFieldOptionForm(row, $index, 'enum')">编辑</a-button>
-              <a-divider direction="vertical" />
-              <a-button size="small" type="default" style="color: #ff4d4f" @click="removeFieldOptionItem(row, $index, 'enum')">移除</a-button>
-            </template>
-          </a-table-column>
+        <a-divider key="enum-divider"/>
+        <a-row class="listener-filed__title"  key="enum-title">
+          <a-col span="20"><span><a-icon type="appstore"/>枚举值列表：</span></a-col>
+          <a-col span="4"><a @click="openFieldOptionForm(null, -1, 'enum')">添加枚举值</a></a-col>
+        </a-row>
+        <a-table :dataSource="fieldEnumList" :columns="fieldEnumColumns" rowKey="id" size="small" key="enum-table"  bordered>
+          <span slot="action" slot-scope="text, record, index">
+          <a @click="openFieldOptionForm(record, index, 'enum')">Edit</a>
+          <a-divider type="vertical"/>
+          <a-popconfirm title="确定删除吗?" @confirm="() => removeFieldOptionItem(record, index, 'enum')">
+            <a>Del</a>
+          </a-popconfirm>
+        </span>
         </a-table>
       </template>
 
       <!-- 校验规则 -->
-      <a-divider key="validation-divider" />
-      <p class="listener-filed__title" key="validation-title">
-        <span><i class="el-icon-menu"></i>约束条件列表：</span>
-        <a-button size="small" type="primary" @click="openFieldOptionForm(null, -1, 'constraint')">添加约束</a-button>
-      </p>
-      <a-table :dataSource="fieldConstraintsList" size="small" key="validation-table" max-height="240" bordered fit>
-        <a-table-column title="#"  :width="50">
-          <template slot-scope="t,r,i" >
-            <span> {{i+1}} </span>
-          </template>
-        </a-table-column>
-        <a-table-column title="约束名称" dataIndex="name" width="100" show-overflow-tooltip />
-        <a-table-column title="约束配置" dataIndex="config" width="100" show-overflow-tooltip />
-        <a-table-column title="操作" width="90px">
-          <template slot-scope="{ row, $index }">
-            <a-button size="small" type="default" @click="openFieldOptionForm(row, $index, 'constraint')">编辑</a-button>
-            <a-divider direction="vertical" />
-            <a-button size="small" type="default" style="color: #ff4d4f" @click="removeFieldOptionItem(row, $index, 'constraint')">移除</a-button>
-          </template>
-        </a-table-column>
+      <a-divider key="validation-divider"/>
+      <a-row class="listener-filed__title"  key="validation-title">
+        <a-col span="20"><span><a-icon type="appstore"/>约束条件列表：</span></a-col>
+        <a-col span="4"><a @click="openFieldOptionForm(null, -1, 'constraint')">添加约束</a></a-col>
+      </a-row>
+      <a-table :dataSource="fieldConstraintsList" rowKey="name"   :columns="fieldConstraintsColumns" size="small" key="validation-table" bordered>
+        <span slot="action" slot-scope="text, record, index">
+          <a @click="openFieldOptionForm(record, index, 'constraint')">Edit</a>
+          <a-divider type="vertical"/>
+          <a-popconfirm title="确定删除吗?" @confirm="() => removeFieldOptionItem(record, index, 'constraint')">
+            <a>Del</a>
+          </a-popconfirm>
+        </span>
       </a-table>
 
       <!-- 表单属性 -->
-      <a-divider key="property-divider" />
-      <p class="listener-filed__title" key="property-title">
-        <span><i class="el-icon-menu"></i>字段属性列表：</span>
-        <a-button size="small" type="primary" @click="openFieldOptionForm(null, -1, 'property')">添加属性</a-button>
-      </p>
-      <a-table :dataSource="fieldPropertiesList" size="small" key="property-table" max-height="240" bordered fit>
-        <a-table-column title="#"  :width="50">
-          <template slot-scope="t,r,i" >
-            <span> {{i+1}} </span>
-          </template>
-        </a-table-column>
-        <a-table-column title="属性编号" dataIndex="id" width="100" show-overflow-tooltip />
-        <a-table-column title="属性值" dataIndex="value" width="100" show-overflow-tooltip />
-        <a-table-column title="操作" width="90px">
-          <template slot-scope="{ row, $index }">
-            <a-button size="small" type="default" @click="openFieldOptionForm(row, $index, 'property')">编辑</a-button>
-            <a-divider direction="vertical" />
-            <a-button size="small" type="default" style="color: #ff4d4f" @click="removeFieldOptionItem(row, $index, 'property')">移除</a-button>
-          </template>
-        </a-table-column>
+      <a-divider key="property-divider"/>
+      <a-row class="listener-filed__title"  key="property-title">
+        <a-col span="20"><span><a-icon type="appstore"/>字段属性列表：</span></a-col>
+        <a-col span="4"><a @click="openFieldOptionForm(null, -1, 'property')">添加属性</a></a-col>
+      </a-row>
+      <a-table :dataSource="fieldPropertiesList" rowKey="id"  :columns="fieldPropertiesColumns"  size="small" key="property-table" bordered>
+        <span slot="action" slot-scope="text, record, index">
+          <a @click="openFieldOptionForm(record, index, 'property')">Edit</a>
+          <a-divider type="vertical"/>
+          <a-popconfirm title="确定删除吗?" @confirm="() => removeFieldOptionItem(record, index, 'property')">
+            <a>Del</a>
+          </a-popconfirm>
+        </span>
       </a-table>
 
       <!-- 底部按钮 -->
@@ -136,21 +115,22 @@
       </div>
     </a-drawer>
 
-    <a-modal :visible.sync="fieldOptionModelVisible" :title="optionModelTitle" width="600px" append-to-body destroy-on-close>
-      <a-form :model="fieldOptionForm" size="small" label-width="96px" @submit.native.prevent>
-        <a-form-item label="编号/ID" v-if="fieldOptionType !== 'constraint'" key="option-id">
-          <a-input v-model="fieldOptionForm.id" allowClear />
-        </a-form-item>
-        <a-form-item label="名称" v-if="fieldOptionType !== 'property'" key="option-name">
-          <a-input v-model="fieldOptionForm.name" allowClear />
-        </a-form-item>
-        <a-form-item label="配置" v-if="fieldOptionType === 'constraint'" key="option-config">
-          <a-input v-model="fieldOptionForm.config" allowClear />
-        </a-form-item>
-        <a-form-item label="值" v-if="fieldOptionType === 'property'" key="option-value">
-          <a-input v-model="fieldOptionForm.value" allowClear />
-        </a-form-item>
-      </a-form>
+    <a-modal :visible.sync="fieldOptionModelVisible" :title="optionModelTitle" :width="600"
+             >
+      <a-form-model :model="fieldOptionForm" size="small" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" @submit.native.prevent>
+        <a-form-model-item label="编号/ID" v-if="fieldOptionType !== 'constraint'" key="option-id">
+          <a-input v-model="fieldOptionForm.id" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item label="名称" v-if="fieldOptionType !== 'property'" key="option-name">
+          <a-input v-model="fieldOptionForm.name" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item label="配置" v-if="fieldOptionType === 'constraint'" key="option-config">
+          <a-input v-model="fieldOptionForm.config" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item label="值" v-if="fieldOptionType === 'property'" key="option-value">
+          <a-input v-model="fieldOptionForm.value" allowClear/>
+        </a-form-model-item>
+      </a-form-model>
       <template slot="footer">
         <a-button size="small" @click="fieldOptionModelVisible = false">取 消</a-button>
         <a-button size="small" type="primary" @click="saveFieldOption">确 定</a-button>
@@ -160,6 +140,7 @@
 </template>
 
 <script>
+
 export default {
   name: "ElementForm",
   props: {
@@ -193,7 +174,97 @@ export default {
       fieldOptionType: "", // 当前激活的字段配置项弹窗 类型
       fieldEnumList: [], // 枚举值列表
       fieldConstraintsList: [], // 约束条件列表
-      fieldPropertiesList: [] // 绑定属性列表
+      fieldPropertiesList: [], // 绑定属性列表,
+      fieldColumns: [
+        {
+          title: '名称',
+          align: "center",
+          width: 60,
+          dataIndex: 'label'
+        },
+        {
+          title: '类型',
+          align: "center",
+          width: 197,
+          dataIndex: 'type',
+          customRender: (t, row, index) => {
+            return this.fieldType[row.type]
+          }
+        },
+        {
+          title: '默认值',
+          align: "center",
+          width: 80,
+          dataIndex: 'defaultValue'
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: "center",
+          width: 80,
+          scopedSlots: {customRender: 'action'}
+        }
+      ],
+      fieldPropertiesColumns: [
+        {
+          title: '属性编号',
+          align: "center",
+          dataIndex: 'id'
+        },
+        {
+          title: '属性值',
+          align: "center",
+          dataIndex: 'value'
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: "center",
+          width: 80,
+          scopedSlots: {customRender: 'action'}
+        }
+      ],
+      fieldConstraintsColumns: [
+        {
+          title: '约束名称',
+          align: "center",
+          dataIndex: 'name'
+        },
+        {
+          title: '约束配置',
+          align: "center",
+          dataIndex: 'config'
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: "center",
+          width: 80,
+          scopedSlots: {customRender: 'action'}
+        }
+      ],
+      fieldEnumColumns: [
+        {
+          title: '枚举值编号',
+          align: "center",
+          dataIndex: 'id'
+        },
+        {
+          title: '枚举值名称',
+          align: "center",
+          dataIndex: 'name'
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: "center",
+          width: 80,
+          scopedSlots: {customRender: 'action'}
+        }
+      ],
+      bpmnELement: {},
+      elExtensionElements: {},
+      otherExtensions: {},
     };
   },
   watch: {
@@ -209,30 +280,36 @@ export default {
       this.bpmnELement = window.bpmnInstances.bpmnElement;
       this.formKey = this.bpmnELement.businessObject.formKey;
       // 获取元素扩展属性 或者 创建扩展属性
-      this.elExtensionElements =
-        this.bpmnELement.businessObject.get("extensionElements") || window.bpmnInstances.moddle.create("bpmn:ExtensionElements", { values: [] });
+      if (this.bpmnELement.businessObject.get("extensionElements")) {
+        this.elExtensionElements = this.bpmnELement.businessObject.get("extensionElements")
+      } else {
+        this.elExtensionElements = window.bpmnInstances.moddle.create("bpmn:ExtensionElements", {values: []})
+      }
+
+      const bpmnType = `${this.prefix}:FormData`
+
       // 获取元素表单配置 或者 创建新的表单配置
-      this.formData =
-        this.elExtensionElements.values.filter(ex => ex.$type === `${this.prefix}:FormData`)?.[0] ||
-        window.bpmnInstances.moddle.create(`${this.prefix}:FormData`, { fields: [] });
+      this.formData = this.elExtensionElements.values.filter(ex => ex.$type === bpmnType)?.[0] || window.bpmnInstances.moddle.create(bpmnType, {fields: []});
 
       // 业务标识 businessKey， 绑定在 formData 中
       this.businessKey = this.formData.businessKey;
 
       // 保留剩余扩展元素，便于后面更新该元素对应属性
-      this.otherExtensions = this.elExtensionElements.values.filter(ex => ex.$type !== `${this.prefix}:FormData`);
+      this.otherExtensions = this.elExtensionElements.values.filter(ex => ex.$type !== bpmnType);
 
       // 复制原始值，填充表格
       this.fieldList = JSON.parse(JSON.stringify(this.formData.fields || []));
-
       // 更新元素扩展属性，避免后续报错
       this.updateElementExtensions();
     },
     updateElementFormKey() {
-      window.bpmnInstances.modeling.updateProperties(this.bpmnELement, { formKey: this.formKey });
+      window.bpmnInstances.modeling.updateProperties(this.bpmnELement, {formKey: this.formKey});
+    },
+    onClose() {
+      this.fieldModelVisible = false;
     },
     updateElementBusinessKey() {
-      window.bpmnInstances.modeling.updateModdleProperties(this.bpmnELement, this.formData, { businessKey: this.businessKey });
+      window.bpmnInstances.modeling.updateModdleProperties(this.bpmnELement, this.formData, {businessKey: this.businessKey});
     },
     // 根据类型调整字段type
     changeFieldTypeType(type) {
@@ -277,8 +354,10 @@ export default {
         this.fieldOptionForm = option ? JSON.parse(JSON.stringify(option)) : {};
         return (this.optionModelTitle = "枚举值配置");
       }
-      this.fieldOptionForm = option ? JSON.parse(JSON.stringify(option)) : {};
-      return (this.optionModelTitle = "约束条件配置");
+      if (type === "constraint") {
+        this.fieldOptionForm = option ? JSON.parse(JSON.stringify(option)) : {};
+        return (this.optionModelTitle = "约束条件配置");
+      }
     },
 
     // 保存字段 某个 配置项
@@ -303,28 +382,28 @@ export default {
     },
     // 保存字段配置
     saveField() {
-      const { id, type, label, defaultValue, datePattern } = this.formFieldForm;
-      const Field = window.bpmnInstances.moddle.create(`${this.prefix}:FormField`, { id, type, label });
+      const {id, type, label, defaultValue, datePattern} = this.formFieldForm;
+      const Field = window.bpmnInstances.moddle.create(`${this.prefix}:FormField`, {id, type, label});
       defaultValue && (Field.defaultValue = defaultValue);
       datePattern && (Field.datePattern = datePattern);
       // 构建属性
       if (this.fieldPropertiesList && this.fieldPropertiesList.length) {
         const fieldPropertyList = this.fieldPropertiesList.map(fp => {
-          return window.bpmnInstances.moddle.create(`${this.prefix}:Property`, { id: fp.id, value: fp.value });
+          return window.bpmnInstances.moddle.create(`${this.prefix}:Property`, {id: fp.id, value: fp.value});
         });
-        Field.properties = window.bpmnInstances.moddle.create(`${this.prefix}:Properties`, { values: fieldPropertyList });
+        Field.properties = window.bpmnInstances.moddle.create(`${this.prefix}:Properties`, {values: fieldPropertyList});
       }
       // 构建校验规则
       if (this.fieldConstraintsList && this.fieldConstraintsList.length) {
         const fieldConstraintList = this.fieldConstraintsList.map(fc => {
-          return window.bpmnInstances.moddle.create(`${this.prefix}:Constraint`, { name: fc.name, config: fc.config });
+          return window.bpmnInstances.moddle.create(`${this.prefix}:Constraint`, {name: fc.name, config: fc.config});
         });
-        Field.validation = window.bpmnInstances.moddle.create(`${this.prefix}:Validation`, { constraints: fieldConstraintList });
+        Field.validation = window.bpmnInstances.moddle.create(`${this.prefix}:Validation`, {constraints: fieldConstraintList});
       }
       // 构建枚举值
       if (this.fieldEnumList && this.fieldEnumList.length) {
         Field.values = this.fieldEnumList.map(fe => {
-          return window.bpmnInstances.moddle.create(`${this.prefix}:Value`, { name: fe.name, id: fe.id });
+          return window.bpmnInstances.moddle.create(`${this.prefix}:Value`, {name: fe.name, id: fe.id});
         });
       }
       // 更新数组 与 表单配置实例

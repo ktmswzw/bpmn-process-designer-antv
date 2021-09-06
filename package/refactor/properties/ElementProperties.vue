@@ -1,30 +1,28 @@
 <template>
   <div class="panel-tab__content">
-    <a-table :dataSource="elementPropertyList" size="small" max-height="240" bordered fit>
-      <a-table-column title="序号" width="50px" type="index" />
-      <a-table-column title="属性名" dataIndex="name" width="100" show-overflow-tooltip />
-      <a-table-column title="属性值" dataIndex="value" width="100" show-overflow-tooltip />
-      <a-table-column title="操作" width="90px">
-        <template slot-scope="{ row, $index }">
-          <a-button size="small" type="default" @click="openAttributesForm(row, $index)">编辑</a-button>
-          <a-divider direction="vertical" />
-          <a-button size="small" type="default" style="color: #ff4d4f" @click="removeAttributes(row, $index)">移除</a-button>
-        </template>
-      </a-table-column>
+    <a-table :dataSource="elementPropertyList" rowKey="name"  :columns="propertyColumns" size="small" bordered>
+      <span slot="action" slot-scope="text, record, index">
+          <a @click="openAttributesForm(record, index)">Edit</a>
+          <a-divider type="vertical"/>
+          <a-popconfirm title="确定删除吗?" @confirm="() => removeAttributes(record, index)">
+            <a>Del</a>
+          </a-popconfirm>
+        </span>
     </a-table>
     <div class="element-drawer__button">
       <a-button size="small" type="primary" icon="plus" @click="openAttributesForm(null, -1)">添加属性</a-button>
     </div>
 
-    <a-modal :visible.sync="propertyFormModelVisible" title="属性配置" width="600px" append-to-body destroy-on-close>
-      <a-form :model="propertyForm" label-width="80px" size="small" ref="attributeFormRef" @submit.native.prevent>
-        <a-form-item label="属性名：" dataIndex="name">
-          <a-input v-model="propertyForm.name" allowClear />
-        </a-form-item>
-        <a-form-item label="属性值：" dataIndex="value">
-          <a-input v-model="propertyForm.value" allowClear />
-        </a-form-item>
-      </a-form>
+    <a-modal :visible.sync="propertyFormModelVisible" title="属性配置" :width="600" >
+      <a-form-model :model="propertyForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" size="small"
+                    ref="attributeFormRef" @submit.native.prevent>
+        <a-form-model-item label="属性名：" prop="name">
+          <a-input v-model="propertyForm.name" allowClear/>
+        </a-form-model-item>
+        <a-form-model-item label="属性值：" prop="value">
+          <a-input v-model="propertyForm.value" allowClear/>
+        </a-form-model-item>
+      </a-form-model>
       <template slot="footer">
         <a-button size="small" @click="propertyFormModelVisible = false">取 消</a-button>
         <a-button size="small" type="primary" @click="saveAttribute">确 定</a-button>
@@ -34,6 +32,9 @@
 </template>
 
 <script>
+import {listenerType} from "../listeners/utilSelf";
+import {uuid} from "../../utils";
+
 export default {
   name: "ElementProperties",
   props: {
@@ -49,7 +50,31 @@ export default {
       elementPropertyList: [],
       propertyForm: {},
       editingPropertyIndex: -1,
-      propertyFormModelVisible: false
+      propertyFormModelVisible: false,
+      propertyColumns: [
+        {
+          title: 'ID',
+          dataIndex: 'id',
+          key: 'rowIndex',
+          width: 40,
+          align: "center",
+          customRender: function (t, r, index) {
+            return parseInt(index) + 1;
+          }
+        },
+        {
+          title: '属性名',
+          align: "center",
+          width: 60,
+          dataIndex: 'name'
+        },
+        {
+          title: '属性值',
+          align: "center",
+          width: 60,
+          dataIndex: 'value'
+        },
+      ]
     };
   },
   watch: {
@@ -65,12 +90,12 @@ export default {
       this.bpmnElement = window.bpmnInstances.bpmnElement;
       this.otherExtensionList = []; // 其他扩展配置
       this.bpmnElementProperties =
-        this.bpmnElement.businessObject?.extensionElements?.values?.filter(ex => {
-          if (ex.$type !== `${this.prefix}:Properties`) {
-            this.otherExtensionList.push(ex);
-          }
-          return ex.$type === `${this.prefix}:Properties`;
-        }) ?? [];
+          this.bpmnElement.businessObject?.extensionElements?.values?.filter(ex => {
+            if (ex.$type !== `${this.prefix}:Properties`) {
+              this.otherExtensionList.push(ex);
+            }
+            return ex.$type === `${this.prefix}:Properties`;
+          }) ?? [];
 
       // 保存所有的 扩展属性字段
       this.bpmnElementPropertyList = this.bpmnElementProperties.reduce((pre, current) => pre.concat(current.values), []);
@@ -86,11 +111,10 @@ export default {
       });
     },
     removeAttributes(attr, index) {
-      this.$confirm("确认移除该属性吗？", "提示", {
-        confirmButtonText: "确 认",
-        cancelButtonText: "取 消"
-      })
-        .then(() => {
+      this.$confirm({
+        title: '提示',
+        content: "确认移除该属性吗？",
+        onOk: () => {
           this.elementPropertyList.splice(index, 1);
           this.bpmnElementPropertyList.splice(index, 1);
           // 新建一个属性字段的保存列表
@@ -99,8 +123,8 @@ export default {
           });
           this.updateElementExtensions(propertiesObject);
           this.resetAttributesList();
-        })
-        .catch(() => console.info("操作取消"));
+        }
+      })
     },
     saveAttribute() {
       // 新建属性字段
