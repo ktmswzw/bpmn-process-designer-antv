@@ -98,12 +98,3 @@ npm run dev
 5. 自定义左侧元素栏 `platte` 与弹出菜单 `contentPad` 示例模块
 6. 自定义渲染方法 `renderer` 模块实例
 
-
-
-## 友情赞助
-
-偷偷丢个赞赏码吧~~~~
-
-微信：[如果对您有帮助，您可以请我喝杯咖啡~~](https://images.weserv.nl/?url=https://i0.hdslb.com/bfs/article/fcf8ffa7f5a1dad34c3c9066e6b0f1d2a181c981.jpg)
-
-支付宝：[如果对您有帮助，您可以请我喝杯咖啡~~](https://images.weserv.nl/?url=https://i0.hdslb.com/bfs/article/8236f07c5d73175acbed49937020ed05127d0de9.jpg)
