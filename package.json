@@ -8,15 +8,15 @@
     "vue"
   ],
   "author": {
-    "name": "MiyueFE",
-    "email": "913784771@qq.com"
+    "name": "ktmswzw",
+    "email": "224911261@qq.com"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:miyuesc/bpmn-process-designer.git"
+    "url": "git@github.com:ktmswzw/bpmn-process-designer-antv.git"
   },
   "scripts": {
-    "demo": "vue-cli-service serve",
+    "dev": "vue-cli-service serve",
     "build": "vue-cli-service build --report"
   },
   "dependencies": {

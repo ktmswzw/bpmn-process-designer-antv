@@ -1,14 +1,8 @@
 # Bpmn Process Designer
 
-<a href="https://github.com/miyuesc/bpmn-process-designer" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/miyuesc/bpmn-process-designer?style=flat&logo=github" /></a>
-<a href="https://github.com/miyuesc/bpmn-process-designer" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/forks/miyuesc/bpmn-process-designer?style=flat&logo=github" /></a>
+A process designer that depends on [bpmn.js](https://github.com/bpmn-io/bpmn-js)  ,  [Vue 2.x](https://github.com/vuejs/vue) and [AntD](https://www.antdv.com/components/modal-cn/). 
 
-<a href='https://gitee.com/miyuesc/bpmn-process-designer'><img src='https://gitee.com/miyuesc/bpmn-process-designer/badge/star.svg?theme=dark' alt='star' /></a>
-<a href='https://gitee.com/miyuesc/bpmn-process-designer'><img src='https://gitee.com/miyuesc/bpmn-process-designer/badge/fork.svg?theme=dark' alt='fork' /></a>
-
-A process designer that depends on [bpmn.js](https://github.com/bpmn-io/bpmn-js)  ,  [Vue 2.x](https://github.com/vuejs/vue) and [ElementUI](https://github.com/ElemeFE/element). 
-
-一个基于 `bpmn.js`，`Vue 2.x` 和 `ElementUI` 开发的流程设计器。
+一个基于 `bpmn.js`，`Vue 2.x` 和 `Ant Design of Vue` 开发的流程设计器。
 
 
 
@@ -16,41 +10,21 @@ You can view and edit `BPMN 2.0` diagrams in the browser.
 
 您可以使用它在浏览器上查看和编辑符合 `BPMN 2.0` 规范的流程文件。
 
-
-
-For on line demo, please visit [MiyueFE Blog](https://miyuesc.github.io/process-designer/)
-
-在线demo请访问 [MiyueFE Blog](https://miyuesc.github.io/process-designer/)
-
-码云同步镜像请访问 [Gitee/MiyueSC Process Designer](https://miyuesc.gitee.io/process-designer/)
-
----
-
-> 针对之前的版本存在的问题，第二版采用了在 window 对象下添加新的命名空间来保存对应的实例对象。
->
-> 原因是因为 通过 Props 传参会被 vue 进行响应式处理，会更改原对象的原型链指向。
-
-**由于个人精力有限，除bug之外，该项目不再维护新功能**
-
----
-
-### 友情链接
-
-**大佬 yiuman 的低代码平台[citrus](https://github.com/Yiuman/citrus)，已集成 activiti7 工作流引擎后端部分**
+Forked from https://miyuesc.gitee.io/process-designer/
 
 
 ## 1. 安装依赖 Installation
 
 ```shell
 npm install
-// or yarn install
+// or yarn install --registry https://registry.npm.taobao.org
 ```
 
 ## 2. 运行 Quick Start
 
 ```shell
-npm run demo
-// or yarn run demo
+npm run dev
+// or yarn run dev
 ```
 
 ## 3. 文档说明 Documentation
@@ -106,49 +80,7 @@ npm run demo
 | `prefix`       | 流程引擎对应扩展属性前缀          | String | `camunda`, `activiti`, `flowable` | `camunda` |
 | `width`        | 侧边栏宽度                        | Number | -                                 | 480       |
 
-## 4. 运行截图
-
-### 4.1 初始界面
-
-![image-20210422140659561](screenshot/image-20210422140659561.png)
-
-### 4.2 监听器
-
-![image-20210422140728176](screenshot/image-20210422140728176.png)
-
-
-
-![image-20210422140805725](screenshot/image-20210422140805725.png)
-
-### 4.3 扩展属性
-
-![image-20210422140906725](screenshot/image-20210422140906725.png)
-
-### 4.4 流转路径配置
-
-![image-20210422140924114](screenshot/image-20210422140924114.png)
-
-
-
-### 4.5 任务配置
-
-![image-20210422141009316](screenshot/image-20210422141009316.png)
-
-### 4.6 多实例任务
-
-![image-20210422141035638](screenshot/image-20210422141035638.png)
-
-### 4.8 表单配置
-
-![image-20210422141220571](screenshot/image-20210422141220571.png)
-
-![image-20210422141354311](screenshot/image-20210422141354311.png)
-
-### 4.9 预览
-
-![image-20210422140939414](screenshot/image-20210422140939414.png)
-
-
+## 4. 运行
 
 ## 5. 功能说明
 
@@ -175,20 +107,3 @@ npm run demo
 微信：[如果对您有帮助，您可以请我喝杯咖啡~~](https://images.weserv.nl/?url=https://i0.hdslb.com/bfs/article/fcf8ffa7f5a1dad34c3c9066e6b0f1d2a181c981.jpg)
 
 支付宝：[如果对您有帮助，您可以请我喝杯咖啡~~](https://images.weserv.nl/?url=https://i0.hdslb.com/bfs/article/8236f07c5d73175acbed49937020ed05127d0de9.jpg)
-
-## 鸣谢/赞助列表
-
-> 排名不分先后
-
-1. [稚屿](https://gitee.com/linzhihai)
-2. 阳
-3. Promising
-4. 向阳
-
-## 学习交流
-
-如果您觉得这些文章对您有帮助，想和我一起学习，欢迎您关注我的微信订阅号。
-
-订阅号名称：前端小白MiyueFE
-
-订阅号：[前端小白MiyueFE](https://images.weserv.nl/?url=https://i0.hdslb.com/bfs/article/fdef0d8f1731ed03b4123d22b7d82acacb6ca10c.jpg)
