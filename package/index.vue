@@ -10,7 +10,7 @@
         @element-click="elementClick"
         @init-finished="initModeler"
     />
-    <properties-panel :key="`penal-${reloadIndex}`" :bpmn-modeler="modeler" :prefix="controlForm.prefix"
+    <properties-panel :key="`penal-${reloadIndex}`" :bpmn-modeler="modeler" :prefix="prefix"
                       class="process-panel"/>
     <div class="demo-control-bar">
       <div class="open-control-dialog" @click="controlDrawerVisible = true">
@@ -40,7 +40,7 @@
                     @change="changeLabelVisibleStatus"/>
         </a-form-model-item>
         <a-form-model-item label="流程引擎" prop="prefix">
-          <a-radio-group v-model="controlForm.prefix" @change="reloadProcessDesigner">
+          <a-radio-group v-model="prefix" @change="reloadProcessDesigner">
             <a-radio value="camunda">camunda</a-radio>
             <a-radio value="flowable">flowable</a-radio>
             <a-radio value="activiti">activiti</a-radio>
@@ -84,7 +84,7 @@ Vue.prototype.$axios = axios;
 // 加载基础ant-design-vue
 import Antd from "ant-design-vue";
 
-Vue.use(Antd)
+Vue.use(Antd);
 import "ant-design-vue/dist/antd.min.css";
 import {vuePlugin} from "../package/highlight";
 import "highlight.js/styles/atom-one-dark-reasonable.css";
@@ -101,9 +101,26 @@ export default {
     ProcessDesigner,
     PropertiesPanel
   },
+  props: {
+    xmlString: {
+      type: String,
+      default: "",
+    },
+    prefix:{
+      type: String,
+      default: "camunda",
+    },
+    users: {
+      type: Array,
+      default: () => []
+    },
+    roles: {
+      type: Array,
+      default: () => []
+    },
+  },
   data() {
     return {
-      xmlString: "",
       modeler: null,
       reloadIndex: 0,
       controlDrawerVisible: false,
@@ -114,7 +131,6 @@ export default {
         simulation: true,
         labelEditing: false,
         labelVisible: false,
-        prefix: "camunda",
         headerButtonSize: "small",
         // additionalModel: []
         additionalModel: [CustomContentPadProvider, CustomPaletteProvider]
