@@ -1,7 +1,7 @@
-import MyProcessDesigner from "./process-designer";
-import MyProcessPenal from "./refactor";
+import ProcessDesigner from "./process-designer";
+import ProcessPenal from "./refactor";
 
-const components = [MyProcessDesigner, MyProcessPenal];
+const components = [ProcessDesigner, ProcessPenal];
 
 const install = function(Vue) {
   components.forEach(component => {

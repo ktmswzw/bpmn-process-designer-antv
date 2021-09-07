@@ -87,7 +87,9 @@
     <div class="my-process-designer__container">
       <div class="my-process-designer__canvas" ref="bpmn-canvas"></div>
     </div>
-    <a-modal title="预览" :width="800" :visible.sync="previewModelVisible">
+    <a-modal title="预览" :width="800" :visible.sync="previewModelVisible"
+             @ok="previewModelVisible = false"
+             @cancel="previewModelVisible = false">
       <highlightjs :language="previewType" :code="previewResult"/>
     </a-modal>
   </div>
@@ -117,8 +119,8 @@ import flowableModdleExtension from "./plugins/extension-moddle/flowable";
 import convert from "xml-js";
 
 export default {
-  name: "MyProcessDesigner",
-  componentName: "MyProcessDesigner",
+  name: "ProcessDesigner",
+  componentName: "ProcessDesigner",
   props: {
     value: String, // xml 字符串
     processId: String,

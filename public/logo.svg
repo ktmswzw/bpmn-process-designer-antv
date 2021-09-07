@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="550px" height="550px" viewBox="0 0 550 550" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>logo2</title>
+    <g id="logo2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="形状结合" transform="translate(14.204225, 59.204225)" fill="#40B883">
+            <path d="M224,0 C347.711784,0 448,100.288216 448,224 C448,347.711784 347.711784,448 224,448 C100.288216,448 0,347.711784 0,224 C0,100.288216 100.288216,0 224,0 Z M222.133333,85.8666667 C146.875331,85.8666667 85.8666667,146.875331 85.8666667,222.133333 C85.8666667,297.391335 146.875331,358.4 222.133333,358.4 C297.391335,358.4 358.4,297.391335 358.4,222.133333 C358.4,146.875331 297.391335,85.8666667 222.133333,85.8666667 Z"></path>
+        </g>
+        <circle id="椭圆形" fill="#34495D" transform="translate(392.857864, 282.857864) rotate(45.000000) translate(-392.857864, -282.857864) " cx="392.857864" cy="282.857864" r="139"></circle>
+        <g id="Group-2" transform="translate(336.000000, 229.000000)">
+            <line x1="57" y1="-56" x2="57" y2="58" id="Line" stroke="#FFFFFF" stroke-width="30" stroke-linecap="round" transform="translate(57.000000, 1.000000) scale(-1, 1) rotate(90.000000) translate(-57.000000, -1.000000) "></line>
+            <line x1="56.5" y1="50.5" x2="57" y2="164" id="Line" stroke="#FFFFFF" stroke-width="30" stroke-linecap="round" transform="translate(57.000000, 107.000000) scale(-1, 1) rotate(90.000000) translate(-57.000000, -107.000000) "></line>
+            <polygon id="Fill-1" fill="#FFFFFF" transform="translate(58.301935, 50.000000) rotate(-180.000000) translate(-58.301935, -50.000000) " points="70.4543552 46.655905 115.801935 46.655905 35.3018383 72.5 46.1497572 53.344095 0.801935149 53.344095 81.3022742 27.5"></polygon>
+        </g>
+        <g id="Group" transform="translate(145.500000, 259.000000) rotate(-90.000000) translate(-145.500000, -259.000000) translate(-43.500000, 187.500000)"></g>
+    </g>
+</svg>

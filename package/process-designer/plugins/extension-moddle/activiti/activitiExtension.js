@@ -65,6 +65,9 @@ ActivitiModdleExtension.prototype.canCloneProperty = function(newElement, propDe
   if (isAllowed("activiti:Connector", propDescriptor, newElement)) {
     return includesType(newElement.eventDefinitions, "bpmn:MessageEventDefinition");
   }
+  if (isAllowed("activiti:FormData", propDescriptor, newElement)) {
+    return includesType(newElement.eventDefinitions, "bpmn:MessageEventDefinition");
+  }
 
   if (isAllowed("activiti:Field", propDescriptor, newElement)) {
     return includesType(newElement.eventDefinitions, "bpmn:MessageEventDefinition");

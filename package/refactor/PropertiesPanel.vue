@@ -55,14 +55,9 @@ import ElementListeners from "./listeners/ElementListeners";
 import ElementProperties from "./properties/ElementProperties";
 import ElementForm from "./form/ElementForm";
 import UserTaskListeners from "./listeners/UserTaskListeners";
-/**
- * 侧边栏
- * @Author MiyueFE
- * @Home https://github.com/miyuesc
- * @Date 2021年3月31日18:57:51
- */
+
 export default {
-  name: "MyPropertiesPanel",
+  name: "PropertiesPanel",
   components: {
     UserTaskListeners,
     ElementForm,
@@ -75,7 +70,7 @@ export default {
     ElementOtherConfig,
     ElementBaseInfo
   },
-  componentName: "MyPropertiesPanel",
+  componentName: "PropertiesPanel",
   props: {
     bpmnModeler: Object,
     prefix: {
