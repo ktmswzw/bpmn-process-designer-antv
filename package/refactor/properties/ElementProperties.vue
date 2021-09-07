@@ -90,17 +90,17 @@ export default {
       this.bpmnElement = window.bpmnInstances.bpmnElement;
       this.otherExtensionList = []; // 其他扩展配置
       this.bpmnElementProperties =
-          this.bpmnElement.businessObject?.extensionElements?.values?.filter(ex => {
+          this.bpmnElement.businessObject.extensionElements.values ?this.bpmnElement.businessObject.extensionElements.values.filter(ex => {
             if (ex.$type !== `${this.prefix}:Properties`) {
               this.otherExtensionList.push(ex);
             }
             return ex.$type === `${this.prefix}:Properties`;
-          }) ?? [];
+          }) : [];
 
       // 保存所有的 扩展属性字段
       this.bpmnElementPropertyList = this.bpmnElementProperties.reduce((pre, current) => pre.concat(current.values), []);
       // 复制 显示
-      this.elementPropertyList = JSON.parse(JSON.stringify(this.bpmnElementPropertyList ?? []));
+      this.elementPropertyList = JSON.parse(JSON.stringify(this.bpmnElementPropertyList ? this.bpmnElementPropertyList : []));
     },
     openAttributesForm(attr, index) {
       this.editingPropertyIndex = index;

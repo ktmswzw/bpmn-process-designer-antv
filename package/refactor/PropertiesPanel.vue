@@ -13,11 +13,11 @@
         <div slot="header" class="panel-tab__title"><a-icon slot="extra" type="control" />流转条件</div>
         <flow-condition :business-object="elementBusinessObject" :type="elementType" />
       </a-collapse-panel>
-      <a-collapse-panel v-if="formVisible" key="form" :style="customStyle">
+      <a-collapse-panel  v-if="formVisible" key="form" :style="customStyle">
         <div slot="header" class="panel-tab__title"><a-icon slot="extra" type="file-done" />表单</div>
         <element-form :id="elementId" :type="elementType" />
       </a-collapse-panel>
-      <a-collapse-panel v-if="elementType.indexOf('Task') !== -1" key="task" :style="customStyle">
+      <a-collapse-panel  v-if="elementType.indexOf('Task') !== -1" key="task" :style="customStyle">
         <div slot="header" class="panel-tab__title"><a-icon slot="extra" type="schedule" />任务</div>
         <element-task :id="elementId" :type="elementType" />
       </a-collapse-panel>
@@ -94,7 +94,7 @@ export default {
   },
   data() {
     return {
-      customStyle: "background: #f7f7f7;border-radius: 4px;margin-bottom: 0px;border: 0;overflow: hidden",
+      customStyle: 'background: #f7f7f7;border-radius: 4px;margin-bottom: 0px;border: 0;overflow: hidden',
       activeTab: "base",
       elementId: "",
       elementType: "",
@@ -156,18 +156,18 @@ export default {
       let activatedElement = element;
       if (!activatedElement) {
         activatedElement =
-          window.bpmnInstances.elementRegistry.find(el => el.type === "bpmn:Process") ??
+          window.bpmnInstances.elementRegistry.find(el => el.type === "bpmn:Process") ? window.bpmnInstances.elementRegistry.find(el => el.type === "bpmn:Process") :
           window.bpmnInstances.elementRegistry.find(el => el.type === "bpmn:Collaboration");
       }
       if (!activatedElement) return;
-      // console.log(`
-      //         ----------
-      // select element changed:
-      //           id:  ${activatedElement.id}
-      //         type:  ${activatedElement.businessObject.$type}
-      //         ----------
-      //         `);
-      // console.log("businessObject: ", activatedElement.businessObject);
+      console.log(`
+              ----------
+      select element changed:
+                id:  ${activatedElement.id}
+              type:  ${activatedElement.businessObject.$type}
+              ----------
+              `);
+      console.log("businessObject: ", activatedElement.businessObject);
       window.bpmnInstances.bpmnElement = activatedElement;
       this.bpmnElement = activatedElement;
       this.elementId = activatedElement.id;

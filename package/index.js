@@ -1,6 +1,20 @@
-import BpmnAntV from "./index.vue";
+import ProcessDesigner from "./process-designer";
+import ProcessPenal from "./refactor";
 
-BpmnAntV.install = Vue => Vue.component(BpmnAntV.name, BpmnAntV) // 给组件配置install方法
-BpmnAntV.version = "0.0.2"
+const components = [ProcessDesigner, ProcessPenal];
 
-export default BpmnAntV
+const install = function(Vue) {
+  components.forEach(component => {
+    Vue.component(component.name, component);
+  });
+};
+
+if (typeof window !== "undefined" && window.Vue) {
+  install(window.Vue);
+}
+
+export default {
+  version: "0.0.1",
+  install,
+  ...components
+};
