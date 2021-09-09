@@ -1,6 +1,6 @@
 {
   "name": "bpmn-process-designer-antv",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A process designer base on Vue 2.x and ant-design-vue",
   "keywords": [
     "bpmn",
