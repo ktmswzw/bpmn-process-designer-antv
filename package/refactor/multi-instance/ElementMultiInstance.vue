@@ -26,9 +26,9 @@
           <a-checkbox v-model="loopInstanceForm.asyncBefore"  @change="updateLoopAsync('asyncBefore')" >异步前</a-checkbox>
           <a-checkbox v-model="loopInstanceForm.asyncAfter"  @change="updateLoopAsync('asyncAfter')" >异步后</a-checkbox>
           <a-checkbox
-            v-model="loopInstanceForm.exclusive"
-            v-if="loopInstanceForm.asyncAfter || loopInstanceForm.asyncBefore"
-            @change="updateLoopAsync('exclusive')"
+              v-model="loopInstanceForm.exclusive"
+              v-if="loopInstanceForm.asyncAfter || loopInstanceForm.asyncBefore"
+              @change="updateLoopAsync('exclusive')"
           >排除</a-checkbox>
         </a-form-model-item>
         <a-form-model-item label="重试周期" prop="timeCycle" v-if="loopInstanceForm.asyncAfter || loopInstanceForm.asyncBefore" key="timeCycle">
@@ -94,16 +94,16 @@ export default {
       this.loopInstanceForm = {
         ...this.defaultLoopInstanceForm,
         ...businessObject.loopCharacteristics,
-        completionCondition: businessObject.loopCharacteristics.completionCondition.body ? businessObject.loopCharacteristics.completionCondition.body :"",
-        loopCardinality: businessObject.loopCharacteristics.loopCardinality.body ? businessObject.loopCharacteristics.loopCardinality.body : ""
+        completionCondition: businessObject.loopCharacteristics?.completionCondition?.body ?? "",
+        loopCardinality: businessObject.loopCharacteristics?.loopCardinality?.body ?? ""
       };
       // 保留当前元素 businessObject 上的 loopCharacteristics 实例
       this.multiLoopInstance = window.bpmnInstances.bpmnElement.businessObject.loopCharacteristics;
       // 更新表单
       if (
-        businessObject.loopCharacteristics.extensionElements &&
-        businessObject.loopCharacteristics.extensionElements.values &&
-        businessObject.loopCharacteristics.extensionElements.values.length
+          businessObject.loopCharacteristics.extensionElements &&
+          businessObject.loopCharacteristics.extensionElements.values &&
+          businessObject.loopCharacteristics.extensionElements.values.length
       ) {
         this.$set(this.loopInstanceForm, "timeCycle", businessObject.loopCharacteristics.extensionElements.values[0].body);
       }

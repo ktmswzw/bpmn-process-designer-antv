@@ -14,8 +14,8 @@
     </div>
 
     <!-- 监听器 编辑/创建 部分 -->
-      <a-drawer :visible.sync="listenerFormModelVisible" title="执行监听器" width="450" placement="right" @close="onClose"
-                :closable="true">
+    <a-drawer :visible.sync="listenerFormModelVisible" title="执行监听器" width="450" placement="right" @close="onClose"
+              :closable="true">
       <a-form-model size="small" :model="listenerForm" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" ref="listenerFormRef" @submit.native.prevent>
         <a-input type="hidden" v-model="listenerForm.id" />
         <a-form-model-item label="事件类型" prop="event">
@@ -328,7 +328,7 @@ export default {
     resetListenersList() {
       this.bpmnElement = window.bpmnInstances.bpmnElement;
       this.otherExtensionList = [];
-      this.bpmnElementListeners = this.bpmnElement.businessObject.extensionElements.values.filter(ex => ex.$type === `${this.prefix}:TaskListener`) ? this.bpmnElement.businessObject.extensionElements.values.filter(ex => ex.$type === `${this.prefix}:TaskListener`): [];
+      this.bpmnElementListeners = this.bpmnElement.businessObject?.extensionElements?.values?.filter(ex => ex.$type === `${this.prefix}:TaskListener`) ?? [];
       this.elementListenersList = this.bpmnElementListeners.map(listener => initListenerType(listener));
     },
     onClose() {
@@ -380,7 +380,7 @@ export default {
             that.elementListenersList.splice(that.editingListenerIndex, 1, that.listenerForm);
           }
           // 保存其他配置
-          that.otherExtensionList = that.bpmnElement.businessObject.extensionElements.values.filter(ex => ex.$type !== `${that.prefix}:TaskListener`) ? that.bpmnElement.businessObject.extensionElements.values.filter(ex => ex.$type !== `${that.prefix}:TaskListener`): [];
+          that.otherExtensionList = that.bpmnElement.businessObject?.extensionElements?.values?.filter(ex => ex.$type !== `${that.prefix}:TaskListener`) ?? [];
           updateElementExtensions(that.bpmnElement, that.otherExtensionList.concat(that.bpmnElementListeners));
           // 4. 隐藏侧边栏
           that.listenerFormModelVisible = false;

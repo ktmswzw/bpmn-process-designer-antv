@@ -35,7 +35,7 @@ export function initListenerType(listener) {
   if (listener.script) listenerType = "scriptListener";
   return {
     ...JSON.parse(JSON.stringify(listener)),
-    ...(listener.script ? listener.script: {}),
+    ...(listener.script ?? {}),
     listenerType: listenerType
   };
 }
